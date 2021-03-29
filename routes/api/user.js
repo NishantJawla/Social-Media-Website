@@ -3,6 +3,8 @@ const router = express.Router();
 const User = require('../../models/User');
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken')
+const keys = require('../../config/keys');
 //@route get /api/users/test
 //@desc use to test user route
 //@access public
@@ -56,11 +58,22 @@ router.post('/login', (req, res) => {
         }else{
             bcrypt.compare(password, user.password).then(isValid => {
                 if(isValid){
-                    return res.status(200).json({
-                        msg: 'user is valid'
-                    })
+                    const payload = {
+                        id: user.id,
+                        name: user.name,
+                        avatar: user.avatar
+                    }
+                    jwt.sign(payload,
+                        keys.secretkey,
+                        {expiresIn : 3600},
+                        (err,token) => {
+                            return res.json({
+                                status: 'success',
+                                token: 'bearer'+token
+                            })
+                        })
                 }else{
-                  return res.status(400).json({password: 'Invalid password'})
+                return res.status(400).json({password: 'Invalid password'})
                 }
             })
         }
