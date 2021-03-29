@@ -42,4 +42,28 @@ router.post('/register', (req, res) => {
         })
     });
 })
+//@route get /api/users/login
+//@desc use to login by a user / set up a token in the user browser
+//@access public
+router.post('/login', (req, res) => {
+    const mail = req.body.email;
+    const password = req.body.password;
+    User.findOne({email: mail}).then(user => {
+        if(!user){
+            return res.status(404).json({
+                email: 'user email is invalid'
+            })
+        }else{
+            bcrypt.compare(password, user.password).then(isValid => {
+                if(isValid){
+                    return res.status(200).json({
+                        msg: 'user is valid'
+                    })
+                }else{
+                  return res.status(400).json({password: 'Invalid password'})
+                }
+            })
+        }
+    })
+})
 module.exports = router;
