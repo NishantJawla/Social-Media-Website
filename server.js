@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const passport = require('passport');
 //initialize body parser middlewares
 app.use(bodyParser.urlencoded({ 
     extended: true 
@@ -18,6 +19,9 @@ mongoose
 .connect(db,{useNewUrlParser: true, useUnifiedTopology: true})
 .then(()=> console.log('DB succesfully connected')).
 catch(err => console.log(err))
+//initialising passport middlewares
+require('./config/passport')(passport);
+//app.use(passport.initialise);
 //routes
 app.get('/', (req, res) => res.send('Hello There!'));
 app.use('/api/user',user);
