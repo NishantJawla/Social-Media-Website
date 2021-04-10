@@ -14,6 +14,21 @@ const validateprofileinput = require('../../validations/profile')
 router.get('/test', (req, res) => res.json({
     "msg": "profile route is working"
 }));
+//@route get /api/profile/handle/:handle
+//@desc get user by handle
+//@access public
+router.get('/handle/:handle', (req, res) =>{
+    const errors = {};
+    Profile.findOne({handle: req.body.handle})
+    .populate('User',['name','avatar'])
+    .then(profile =>{
+        if(!profile){
+            errors.noprofile = "There is no profile available with this handle";
+            return res.status(404).json(errors);
+        }
+        res.json(profile);
+    }).catch(err => res.json(err));
+})
 //@route get /api/
 //@desc Use to get current user profile
 //@access private
